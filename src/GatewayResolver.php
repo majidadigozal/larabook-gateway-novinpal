@@ -11,6 +11,7 @@ use Larabookir\Gateway\Pasargad\Pasargad;
 use Larabookir\Gateway\Saman\Saman;
 use Larabookir\Gateway\Asanpardakht\Asanpardakht;
 use Larabookir\Gateway\Zarinpal\Zarinpal;
+use Larabookir\Gateway\Jibit\Jibit;
 use Larabookir\Gateway\Payir\Payir;
 use Larabookir\Gateway\Exceptions\RetryException;
 use Larabookir\Gateway\Exceptions\PortNotFoundException;
@@ -136,6 +137,8 @@ class GatewayResolver
             $name = Enum::SAMAN;
         } elseif ($port InstanceOf Zarinpal) {
             $name = Enum::ZARINPAL;
+        }  elseif ($port InstanceOf Jibit) {
+            $name = Enum::JIBIT;
         } elseif ($port InstanceOf Sadad) {
             $name = Enum::SADAD;
         } elseif ($port InstanceOf Asanpardakht) {

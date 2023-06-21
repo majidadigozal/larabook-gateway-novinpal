@@ -7,6 +7,7 @@ class Enum
 	const MELLAT = 'MELLAT';
 	const SADAD = 'SADAD';
 	const ZARINPAL = 'ZARINPAL';
+	const JIBIT = 'JIBIT';
 	const PAYLINE = 'PAYLINE';
 	const JAHANPAY = 'JAHANPAY';
 	const PARSIAN = 'PARSIAN';
