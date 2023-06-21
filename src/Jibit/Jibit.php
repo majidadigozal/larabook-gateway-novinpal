@@ -14,31 +14,31 @@ class Jibit extends PortAbstract implements PortInterface
      * Base URL for the Jibit API.
      * @var string
      */
-    protected $baseUrl = 'https://napi.jibit.ir/ppg/v3/';
+    protected const baseUrl = 'https://napi.jibit.ir/ppg/v3/';
 
     /**
      * URL for generating tokens.
      * @var string
      */
-    protected $tokenUrl = $this->baseUrl . 'tokens';
+    protected const tokenUrl = self::baseUrl . 'tokens';
 
     /**
      * URL for creating purchase requests.
 	 * @var string
      */
-    protected $requestUrl = $this->baseUrl . 'purchases';
+    protected const requestUrl = self::baseUrl . 'purchases';
 
     /**
      * URL for verifying purchase requests.
 	 * @var string
      */
-    protected $verifyUrl = $this->baseUrl . 'purchases/{purchaseId}/verify';
+    protected const verifyUrl = self::baseUrl . 'purchases/{purchaseId}/verify';
 
     /**
      * URL for submitting payments for a purchase.
 	 * @var string
      */
-    protected $gateUrl = $this->baseUrl . 'purchases/{purchaseId}/payments';
+    protected const gateUrl = self::baseUrl . 'purchases/{purchaseId}/payments';
 
     /**
      * Mapping of api status values.
@@ -131,7 +131,7 @@ class Jibit extends PortAbstract implements PortInterface
             'currency' => 'IRR',
         ];
         
-        $response = $this->jsonRequest($this->requestUrl, $data, [
+        $response = $this->jsonRequest(self::requestUrl, $data, [
             'Authorization: Bearer ' . $token['accessToken']
         ]);
 
@@ -179,7 +179,7 @@ class Jibit extends PortAbstract implements PortInterface
             'purchaseId' => $this->refId,
         ];
 
-        $response = $this->jsonRequest($this->verifyUrl, $data, [
+        $response = $this->jsonRequest(self::verifyUrl, $data, [
             'Authorization: Bearer ' . $token['accessToken']
         ]);
 
@@ -218,7 +218,7 @@ class Jibit extends PortAbstract implements PortInterface
      */
     private function generateToken($apiKey, $secretKey)
     {
-        $response = $this->jsonRequest($this->tokenUrl, [
+        $response = $this->jsonRequest(self::tokenUrl, [
             'apiKey' => $apiKey,
             'secretKey' => $secretKey
         ]);
