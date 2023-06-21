@@ -233,6 +233,6 @@ class Jibit extends PortAbstract implements PortInterface
     protected function failed($errorCode) {
         $this->transactionFailed();
         $this->newLog($errorCode, JibitException::$errors[$errorCode]);
-        return throw new JibitException($errorCode);
+        throw new JibitException($errorCode);
     }
 }
