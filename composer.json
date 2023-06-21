@@ -28,6 +28,7 @@
     "ipay",
     "asan-pardakht",
     "pay-ir",
+    "jibit",
     "paypal"
   ],
   "license": "MIT",
@@ -43,6 +44,10 @@
     {
       "name": "Amir Khorsandi",
       "email": "Khorsandi@me.com"
+    },
+    {
+      "name": "Mahbod Azizkhani",
+      "email": "mzero651@gmail.com"
     }
   ],
   "require": {
