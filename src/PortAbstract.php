@@ -401,12 +401,13 @@ abstract class PortAbstract
 	 *
 	 * @param string $url The URL to make the request to.
 	 * @param string $method The HTTP method (e.g., GET, POST, PUT, DELETE).
-	 * @param array|string $data The request data (optional).
+	 * @param array $data The request data (optional).
 	 * @param array $headers The request headers (optional).
+	 * @param bool $json If the request is json
 	 * @return string The response body.
 	 * @throws Exception if the request fails or encounters an error.
 	 */
-	function request($url, $method = 'GET', $data = [], $headers = [])
+	function request($url, $method = 'GET', $data = [], $headers = [], $json = false)
 	{
 		$ch = curl_init();
 
@@ -416,10 +417,15 @@ abstract class PortAbstract
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_HEADER, false);
-
+		
 		// Set request data if provided
 		if (!empty($data)) {
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+			if($json) {
+				$data = json_encode($data);
+				$headers[] = 'Content-Type: application/json';
+			} else {
+				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+			}
 		}
 
 		// Set request headers if provided
@@ -463,11 +469,7 @@ abstract class PortAbstract
 	 */
 	function jsonRequest($url, $data, $headers = [])
 	{
-		$jsonData = json_encode($data);
-
-		$headers[] = 'Content-Type: application/json';
-
-		$response = $this->request($url, 'POST', $jsonData, $headers);
+		$response = $this->request($url, 'POST', $data, $headers, true);
 
 		// Decode the JSON response
 		$responseData = json_decode($response, true);
