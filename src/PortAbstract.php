@@ -451,7 +451,7 @@ abstract class PortAbstract
 		curl_close($ch);
 
 		// Handle the response
-		if ($statusCode >= 200 && $statusCode < 300) {
+		if ($response) {
 			return $response;
 		} else {
 			throw new Exception("Request failed with HTTP status code: {$statusCode}");
