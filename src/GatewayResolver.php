@@ -90,6 +90,7 @@ class GatewayResolver
 	/**
 	 * Callback
 	 *
+	 * @param array $validCardNumbers only works with jibit gateway
 	 * @return $this->port
 	 *
 	 * @throws InvalidRequestException
@@ -97,7 +98,7 @@ class GatewayResolver
 	 * @throws PortNotFoundException
 	 * @throws RetryException
 	 */
-	public function verify()
+	public function verify($validCardNumbers = [])
 	{
 		if (!$this->request->has('transaction_id') && !$this->request->has('iN') && !$this->request->has('pspRRN'))
 			throw new InvalidRequestException;
@@ -116,6 +117,8 @@ class GatewayResolver
 			throw new RetryException;
 
 		$this->make($transaction->port);
+
+		$this->port->setValidCardNumbers($validCardNumbers);
 
 		return $this->port->verify($transaction);
 	}
