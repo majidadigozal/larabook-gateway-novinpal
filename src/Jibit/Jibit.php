@@ -194,7 +194,7 @@ class Jibit extends PortAbstract implements PortInterface
         $this->trackingCode = Request::input('pspRRN');
         $this->cardNumber = Request::input('payerMaskedCardNumber');
         $this->transactionSucceed();
-        $this->newLog(1, Enum::TRANSACTION_SUCCEED_TEXT);
+        $this->newLog(Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_SUCCEED_TEXT);
         return true;
     }
 
@@ -238,7 +238,7 @@ class Jibit extends PortAbstract implements PortInterface
      */
     protected function failed($errorCode) {
         $this->transactionFailed();
-        $this->newLog($errorCode, JibitException::ERROR_MESSAGES[$errorCode]);
+        $this->newLog(JibitException::ERROR_CODES[$errorCode], JibitException::ERROR_MESSAGES[$errorCode]);
         throw new JibitException($errorCode);
     }
 }
