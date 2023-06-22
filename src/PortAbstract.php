@@ -421,11 +421,13 @@ abstract class PortAbstract
 		// Set request data if provided
 		if (!empty($data)) {
 			if($json) {
-				$data = json_encode($data);
 				$headers[] = 'Content-Type: application/json';
+				$data = json_encode($data);
 			} else {
-				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+				$data = http_build_query($data);
 			}
+
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		}
 
 		// Set request headers if provided
