@@ -9,7 +9,7 @@ class JibitException extends BankException
 
     public function __construct($errorCode)
     {
-        $this->errorCode = intval($errorCode);
+        $this->errorCode = $errorCode;
 
         parent::__construct(@self::$errors[$this->errorCode].' #'.$this->errorCode, $this->errorCode);
     }
