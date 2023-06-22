@@ -9,12 +9,44 @@ class JibitException extends BankException
 
     public function __construct($errorCode)
     {
-        $this->errorCode = $errorCode;
+        $this->errorCode = @self::ERROR_CODES[$errorCode];
 
-        parent::__construct(@self::$errors[$this->errorCode].' #'.$this->errorCode, $this->errorCode);
+        parent::__construct(@self::ERROR_MESSAGES[$errorCode], $this->errorCode);
     }
 
-    public static $errors = array(
+    public const ERROR_CODES = array(
+        'failed'  => 0,
+        'verification_failed' => 1,
+        'client.not_active' => 2,
+        'amount.is_required' => 3,
+        'amount.not_enough' => 4,
+        'wage.is_invalid' => 5,
+        'amount_plus_wage.max_value_exceeded' => 6,
+        'amount_plus_wage.permitted_value_exceeded' => 7,
+        'currency.is_required' => 8,
+        'callbackUrl.is_required' => 9,
+        'callbackUrl.is_invalid' => 10,
+        'callbackUrl.max_length' => 11,
+        'clientReferenceNumber.is_required' => 12,
+        'clientReferenceNumber.duplicated' => 13,
+        'payerCardNumber.is_invalid' => 14,
+        'payerNationalCode.is_invalid' => 15,
+        'userIdentifier.max_length' => 16,
+        'payerMobileNumber.is_invalid' => 17,
+        'payerMobileNumber.in_blacklist' => 18,
+        'payerNationalCode_and_payerMobileNumber.are_required' => 19,
+        'description.max_length' => 20,
+        'ip.not_trusted' => 21,
+        'security.auth_required' => 22,
+        'token.verification_failed' => 23,
+        'web.invalid_or_missing_body' => 24,
+        'server.error' => 25,
+        'purchase.not_found' => 26,
+        'purchase.invalid_state' => 27,
+        'purchase.already_reversed' => 28,
+    );
+
+    public const ERROR_MESSAGES = array(
         'failed'  => 'تراکنش با خطا مواجه شده است',
         'verification_failed' => 'تایید تراکنش با خطا مواجه شده است',
         'client.not_active' => 'مشتری فعال نیست.',
