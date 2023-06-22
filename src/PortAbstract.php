@@ -82,6 +82,12 @@ abstract class PortAbstract
 	protected $trackingCode;
 
 	/**
+	 * validCardNumbers is an array that is initially empty, but is later populated with valid card numbers.
+	 *  The purpose of this array is to provide a reference for validating card numbers provided in a payment callback.
+	 */
+	protected $validCardNumbers = array();
+
+	/**
 	 * Initialize of class
 	 *
 	 * @param Config $config
@@ -235,6 +241,20 @@ abstract class PortAbstract
 	function getPrice()
 	{
 		return $this->amount;
+	}
+
+	/**
+	 * @param array $validCardNumbers
+	 */
+	public function setValidCardNumbers($validCardNumbers) {
+		$this->validCardNumbers = $validCardNumbers;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getValidCardNumbers() {
+		return $this->validCardNumbers;
 	}
 
 	/**
