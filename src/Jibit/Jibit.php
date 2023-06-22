@@ -80,8 +80,14 @@ class Jibit extends PortAbstract implements PortInterface
     public function verify($transaction)
     {
         parent::verify($transaction);
-        $this->userPayment();
-        $this->verifyPayment();
+
+        $status = Request::input('status');
+        $purchaseId = Request::input('purchaseId');
+        $trackingCode = Request::input('pspRRN');
+        $cardNumber = Request::input('payerMaskedCardNumber');
+
+        $this->userPayment($status, $purchaseId, $trackingCode, $cardNumber);
+        $this->verifyPayment($trackingCode, $cardNumber);
         return $this;
     }
 
@@ -148,13 +154,17 @@ class Jibit extends PortAbstract implements PortInterface
     /**
      * Check user payment with GET data
      *
+     * @param string $status
+     * @param int|null $purchaseId
+     * @param string|null $trackingCode
+     * @param string|null $cardNumber
      * @return bool
      *
      * @throws JibitException
      */
-    protected function userPayment()
+    protected function userPayment($status, $purchaseId, $trackingCode, $cardNumber)
     {
-        if (Request::input('status') == self::apiStatus['FAIL'] || !Request::input('purchaseId')) {
+        if ($status != self::apiStatus['SUCCESS'] || !$purchaseId || !$trackingCode || !$cardNumber) {
             $this->failed('failed');
         }
         
@@ -164,11 +174,13 @@ class Jibit extends PortAbstract implements PortInterface
     /**
      * Verify user payment from zarinpal server
      *
+     * @param string $trackingCode
+     * @param string $cardNumber
      * @return bool
      *
      * @throws JibitException
      */
-    protected function verifyPayment()
+    protected function verifyPayment($trackingCode, $cardNumber)
     {
         $token = $this->generateToken(
             $this->config->get('gateway.jibit.api_key'),
@@ -191,8 +203,8 @@ class Jibit extends PortAbstract implements PortInterface
             $this->failed('verification_failed');
         }
 
-        $this->trackingCode = Request::input('pspRRN');
-        $this->cardNumber = Request::input('payerMaskedCardNumber');
+        $this->trackingCode = $trackingCode;
+        $this->cardNumber = $cardNumber;
         $this->transactionSucceed();
         $this->newLog(Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_SUCCEED_TEXT);
         return true;
