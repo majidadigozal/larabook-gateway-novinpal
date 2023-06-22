@@ -137,7 +137,7 @@ class Jibit extends PortAbstract implements PortInterface
 
         if (array_key_exists('errors', $response)) {
             $errorCode = $response['errors'][0]['code'];
-            return $this->failed($errorCode);
+            $this->failed($errorCode);
         }
 
         $this->refId = $response['purchaseId'];
@@ -155,7 +155,7 @@ class Jibit extends PortAbstract implements PortInterface
     protected function userPayment()
     {
         if (Request::input('status') == self::apiStatus['FAIL'] || !Request::input('purchaseId')) {
-            return $this->failed('failed');
+            $this->failed('failed');
         }
         
         return true;
@@ -184,11 +184,11 @@ class Jibit extends PortAbstract implements PortInterface
         ]);
 
         if (array_key_exists('errors', $response)) {
-            return $this->failed($response['errors'][0]['code']);
+            $this->failed($response['errors'][0]['code']);
         }
       
         if ($response['status'] != self::apiStatus['SUCCESS']) {
-            return $this->failed('verification_failed');
+            $this->failed('verification_failed');
         }
 
         $this->trackingCode = Request::input('pspRRN');
@@ -230,6 +230,11 @@ class Jibit extends PortAbstract implements PortInterface
         return $response;
     }
 
+    /**
+     * Handle exceptions or errors during a Jibit transaction
+     * @param int $errorCode The error code of the encountered exception
+     * @throws JibitException An instance of the JibitException class with the given error code
+     */
     protected function failed($errorCode) {
         $this->transactionFailed();
         $this->newLog($errorCode, JibitException::$errors[$errorCode]);
