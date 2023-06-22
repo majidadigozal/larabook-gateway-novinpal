@@ -233,7 +233,7 @@ class Jibit extends PortAbstract implements PortInterface
 
     /**
      * Handle exceptions or errors during a Jibit transaction
-     * @param int $errorCode The error code of the encountered exception
+     * @param int|string $errorCode The error code of the encountered exception
      * @throws JibitException An instance of the JibitException class with the given error code
      */
     protected function failed($errorCode) {
