@@ -224,7 +224,8 @@ class Jibit extends PortAbstract implements PortInterface
         ]);
 
         if (array_key_exists('errors', $response)) {
-            throw new JibitException($response['errors'][0]['code']);
+            $errorCode = $response['errors'][0]['code'];
+            $this->failed($errorCode);
         }
 
         return $response;
