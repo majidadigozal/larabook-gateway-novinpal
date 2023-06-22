@@ -71,7 +71,7 @@ class Jibit extends PortAbstract implements PortInterface
      */
     public function redirect()
     {
-        return redirect()->to($this->bindPurchaseId($this->refId, $this->gateUrl));
+        return redirect()->to($this->bindPurchaseId($this->refId, self::gateUrl));
     }
 
     /**
@@ -237,7 +237,7 @@ class Jibit extends PortAbstract implements PortInterface
      */
     protected function failed($errorCode) {
         $this->transactionFailed();
-        $this->newLog($errorCode, JibitException::$errors[$errorCode]);
+        $this->newLog($errorCode, JibitException::ERROR_MESSAGES[$errorCode]);
         throw new JibitException($errorCode);
     }
 }
