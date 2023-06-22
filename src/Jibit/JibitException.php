@@ -44,6 +44,7 @@ class JibitException extends BankException
         'purchase.not_found' => 26,
         'purchase.invalid_state' => 27,
         'purchase.already_reversed' => 28,
+        'purchase.forbidden_card_number' => 29,
     );
 
     public const ERROR_MESSAGES = array(
@@ -76,5 +77,6 @@ class JibitException extends BankException
         'purchase.not_found' => 'سفارش یافت نشد.',
         'purchase.invalid_state' => 'وضعیت سفارش نامعتبر است',
         'purchase.already_reversed' => 'سفارش قبلاً برگردانده شده است.',
+        'purchase.forbidden_card_number' => 'کارت پرداخت کننده غیر مجاز است',
     );
 }
