@@ -112,7 +112,7 @@ class Jibit extends PortAbstract implements PortInterface
         if (!$this->callbackUrl)
             throw new Exception('You have to set callback url first.');
             
-        return urlencode($this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]));
+        return $this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]);
     }
 
     /**
