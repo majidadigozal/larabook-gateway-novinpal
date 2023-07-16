@@ -167,20 +167,15 @@ class Jibit extends PortAbstract implements PortInterface
      */
     protected function userPayment($status, $purchaseId, $trackingCode, $maskedCardNumber)
     {
-        if($maskedCardNumber && !empty($this->validCardNumbers)) {
-            $cardNumber = null;
-
-            foreach($this->getValidCardNumbers() as $validCardNumber) {
-                if (preg_replace("/(\d{6}).*(\d{4})/", "$1******$2", $validCardNumber) == $maskedCardNumber)
-                    $cardNumber = $validCardNumber;
-            }
-
-            if(is_null($cardNumber))
-                $this->failed('purchase.forbidden_card_number');
+        if(!$purchaseId || !$trackingCode || !$maskedCardNumber) {
+            $this->failed('failed');
         }
 
-        if ($status != self::apiStatus['SUCCESS'] || !$purchaseId || !$trackingCode || !$maskedCardNumber) {
-            $this->failed('failed');
+        if ($status != self::apiStatus['SUCCESS']) {
+            if(!empty($this->validCardNumbers) && !$this->validateCardNumber($maskedCardNumber))
+                $this->failed('purchase.forbidden_card_number');
+            else
+                $this->failed('failed');
         }
         
         return true;
@@ -202,7 +197,6 @@ class Jibit extends PortAbstract implements PortInterface
             $this->config->get('gateway.jibit.secret_key')
         );
         
-
         $response = $this->jsonRequest($this->bindPurchaseId($this->refId, self::verifyUrl), [], [
             'Authorization: Bearer ' . $token['accessToken']
         ]);
