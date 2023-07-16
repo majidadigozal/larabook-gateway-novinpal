@@ -91,12 +91,12 @@ class Zarinpal extends PortAbstract implements PortInterface
 	 */
 	public function set($amount)
 	{
-		$this->amount = ($amount / 10);
+		$this->amount = ($amount);
 
 		return $this;
 	}
 
-	/**
+    /**
 	 * {@inheritdoc}
 	 */
 	public function ready()
@@ -226,36 +226,36 @@ class Zarinpal extends PortAbstract implements PortInterface
 	 *
 	 * @throws ZarinpalException
 	 */
-	protected function verifyPayment()
-	{
+    protected function verifyPayment()
+    {
 
-		$fields = array(
-			'MerchantID' => $this->config->get('gateway.zarinpal.merchant-id'),
-			'Authority' => $this->refId,
-			'Amount' => $this->amount,
-		);
+        $fields = array(
+            'MerchantID' => $this->config->get('gateway.zarinpal.merchant-id'),
+            'Authority' => $this->refId,
+            'Amount' => $this->amount,
+        );
 
-		try {
-			$soap = new SoapClient($this->serverUrl, ['encoding' => 'UTF-8']);
-			$response = $soap->PaymentVerification($fields);
+        try {
+            $soap = new SoapClient($this->serverUrl, ['encoding' => 'UTF-8']);
+            $response = $soap->PaymentVerification($fields);
 
-		} catch (\SoapFault $e) {
-			$this->transactionFailed();
-			$this->newLog('SoapFault', $e->getMessage());
-			throw $e;
-		}
+        } catch (\SoapFault $e) {
+            $this->transactionFailed();
+            $this->newLog('SoapFault', $e->getMessage());
+            throw $e;
+        }
 
-		if ($response->Status != 100 && $response->Status != 101) {
-			$this->transactionFailed();
-			$this->newLog($response->Status, ZarinpalException::$errors[$response->Status]);
-			throw new ZarinpalException($response->Status);
-		}
+        if ($response->Status != 100 && $response->Status != 101) {
+            $this->transactionFailed();
+            $this->newLog($response->Status, ZarinpalException::$errors[$response->Status]);
+            throw new ZarinpalException($response->Status);
+        }
 
-		$this->trackingCode = $response->RefID;
-		$this->transactionSucceed();
-		$this->newLog($response->Status, Enum::TRANSACTION_SUCCEED_TEXT);
-		return true;
-	}
+        $this->trackingCode = $response->RefID;
+        $this->transactionSucceed();
+        $this->newLog($response->Status, Enum::TRANSACTION_SUCCEED_TEXT);
+        return true;
+    }
 
 	/**
 	 * Set server for soap transfers data

@@ -4,18 +4,20 @@ namespace Larabookir\Gateway;
 
 class Enum
 {
-	const MELLAT = 'MELLAT';
-	const SADAD = 'SADAD';
-	const ZARINPAL = 'ZARINPAL';
-	const PAYLINE = 'PAYLINE';
-	const JAHANPAY = 'JAHANPAY';
-	const PARSIAN = 'PARSIAN';
-	const PASARGAD = 'PASARGAD';
-	const SAMAN = 'SAMAN';
-	const ASANPARDAKHT = 'ASANPARDAKHT';
-	const PAYPAL = 'PAYPAL';
-  	const PAYIR = 'PAYIR';
-  	const IRANKISH = 'IRANKISH';
+    const MELLAT = 'MELLAT';
+    const SADAD = 'SADAD';
+    const ZARINPAL = 'ZARINPAL';
+	const JIBIT = 'JIBIT';
+    const PAYLINE = 'PAYLINE';
+    const JAHANPAY = 'JAHANPAY';
+    const PARSIAN = 'PARSIAN';
+    const PASARGAD = 'PASARGAD';
+    const SAMAN = 'SAMAN';
+    const ASANPARDAKHT = 'ASANPARDAKHT';
+    const PAYPAL = 'PAYPAL';
+    const PAYIR = 'PAYIR';
+    const IRANKISH = 'IRANKISH';
+    const VENDAR = 'VENDAR';
   	const MASKAN = self::IRANKISH;
 
   	static function getIPGs(){
@@ -30,7 +32,7 @@ class Enum
             'TRANSACTION_FAILED',
             'TRANSACTION_FAILED_TEXT',
         ];
-        
+
         if(function_exists('array_except'))
             return array_values(array_except($reflect->getConstants(),$excepts));
         else
