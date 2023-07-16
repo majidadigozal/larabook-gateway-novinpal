@@ -85,10 +85,9 @@ class Jibit extends PortAbstract implements PortInterface
         $purchaseId = Request::input('purchaseId');
         $trackingCode = Request::input('pspRRN');
         $maskedCardNumber = Request::input('payerMaskedCardNumber');
-        $hashedCardNumber = Request::input('pspHashedCardNumber');
 
-        $this->userPayment($status, $purchaseId, $trackingCode, $maskedCardNumber, $hashedCardNumber);
-        $this->verifyPayment($trackingCode, $maskedCardNumber, $hashedCardNumber);
+        $this->userPayment($status, $purchaseId, $trackingCode, $maskedCardNumber);
+        $this->verifyPayment($trackingCode, $maskedCardNumber);
         return $this;
     }
 
@@ -137,6 +136,9 @@ class Jibit extends PortAbstract implements PortInterface
             'clientReferenceNumber' => $this->transactionId,
             'currency' => 'IRR',
         ];
+
+        if(count($this->getValidCardNumbers()))
+            $data['payerCardNumbers'] = $this->getValidCardNumbers();
         
         $response = $this->jsonRequest(self::requestUrl, $data, [
             'Authorization: Bearer ' . $token['accessToken']
@@ -159,14 +161,13 @@ class Jibit extends PortAbstract implements PortInterface
      * @param int|null $purchaseId
      * @param string|null $trackingCode
      * @param string|null $maskedCardNumber
-     * @param string|null $hashedCardNumber
      * @return bool
      *
      * @throws JibitException
      */
-    protected function userPayment($status, $purchaseId, $trackingCode, $maskedCardNumber, $hashedCardNumber)
+    protected function userPayment($status, $purchaseId, $trackingCode, $maskedCardNumber)
     {
-        if ($status != self::apiStatus['SUCCESS'] || !$purchaseId || !$trackingCode || !$maskedCardNumber || !$hashedCardNumber) {
+        if ($status != self::apiStatus['SUCCESS'] || !$purchaseId || !$trackingCode || !$maskedCardNumber) {
             $this->failed('failed');
         }
         
@@ -178,12 +179,11 @@ class Jibit extends PortAbstract implements PortInterface
      *
      * @param string $trackingCode
      * @param string $maskedCardNumber
-     * @param string $hashedCardNumber
      * @return bool
      *
      * @throws JibitException
      */
-    protected function verifyPayment($trackingCode, $maskedCardNumber, $hashedCardNumber)
+    protected function verifyPayment($trackingCode, $maskedCardNumber)
     {
         $token = $this->generateToken(
             $this->config->get('gateway.jibit.api_key'),
@@ -197,8 +197,8 @@ class Jibit extends PortAbstract implements PortInterface
         if(!empty($this->validCardNumbers)) {
             $cardNumber = null;
 
-            foreach($this->validCardNumbers as $validCardNumber) {
-                if(md5($validCardNumber) == $hashedCardNumber)
+            foreach($this->getValidCardNumbers() as $validCardNumber) {
+                if (preg_replace("/(\d{6}).*(\d{4})/", "$1******$2", $validCardNumber) == $maskedCardNumber)
                     $cardNumber = $validCardNumber;
             }
 
