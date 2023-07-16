@@ -212,6 +212,8 @@ class Jibit extends PortAbstract implements PortInterface
             'Authorization: Bearer ' . $token['accessToken']
         ]);
 
+        $inquiryResponse = json_decode($inquiryResponse, true);
+
         $inquiryResponse = $inquiryResponse['elements'][0];
 
         if ($inquiryResponse['state'] != self::apiInquiryStatus['READY_TO_VERIFY'])
