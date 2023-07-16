@@ -208,7 +208,7 @@ class Jibit extends PortAbstract implements PortInterface
             $this->config->get('gateway.jibit.secret_key')
         );
 
-        $inquiryResponse = $this->jsonRequest($this->bindPurchaseId($this->refId, self::inquiryUrl), [], [
+        $inquiryResponse = $this->request($this->bindPurchaseId($this->refId, self::inquiryUrl), 'GET', [], [
             'Authorization: Bearer ' . $token['accessToken']
         ]);
 
