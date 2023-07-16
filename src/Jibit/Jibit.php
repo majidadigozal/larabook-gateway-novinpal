@@ -190,10 +190,6 @@ class Jibit extends PortAbstract implements PortInterface
             $this->config->get('gateway.jibit.secret_key')
         );
 
-        $data = [
-            'purchaseId' => $this->refId,
-        ];
-
         if(!empty($this->validCardNumbers)) {
             $cardNumber = null;
 
@@ -207,9 +203,11 @@ class Jibit extends PortAbstract implements PortInterface
         }
         
 
-        $response = $this->jsonRequest(self::verifyUrl, $data, [
+        $response = $this->jsonRequest($this->bindPurchaseId($this->refId, self::verifyUrl), [], [
             'Authorization: Bearer ' . $token['accessToken']
         ]);
+
+        var_dump($response);exit;
 
         if (array_key_exists('errors', $response)) {
             $this->failed($response['errors'][0]['code']);
