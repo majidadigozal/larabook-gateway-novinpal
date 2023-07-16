@@ -87,6 +87,11 @@ abstract class PortAbstract
 	 */
 	protected $validCardNumbers = array();
 
+	protected $userId = null;
+
+	protected $orderId = null;
+
+
 	/**
 	 * Initialize of class
 	 *
@@ -107,6 +112,7 @@ abstract class PortAbstract
 	function setConfig($config)
 	{
 		$this->config = $config;
+		return $this;
 	}
 
 	/**
@@ -136,13 +142,15 @@ abstract class PortAbstract
 	}
 
 	/**
-	 * Get port id, $this->port
+	 * Portal setter
 	 *
-	 * @return int
+	 * @return PortAbstract
 	 */
 	function setPortName($name)
 	{
 		$this->portName = $name;
+
+		return $this;
 	}
 
 	/**
@@ -150,11 +158,12 @@ abstract class PortAbstract
 	 *
 	 * @param string $description
 	 *
-	 * @return void
+	 * @return PortAbstract
 	 */
 	function setCustomDesc ($description)
 	{
 		$this->description = $description;
+		return $this;
 	}
 
 	/**
@@ -172,11 +181,12 @@ abstract class PortAbstract
 	 *
 	 * @param string $description
 	 *
-	 * @return void
+	 * @return PortAbstract
 	 */
 	function setCustomInvoiceNo ($invoiceNo)
 	{
 		$this->customInvoiceNo = $invoiceNo;
+		return $this;
 	}
 
 	/**
@@ -248,6 +258,7 @@ abstract class PortAbstract
 	 */
 	public function setValidCardNumbers($validCardNumbers) {
 		$this->validCardNumbers = $validCardNumbers;
+		return $this;
 	}
 
 	/**
@@ -256,6 +267,37 @@ abstract class PortAbstract
 	public function getValidCardNumbers() {
 		return $this->validCardNumbers;
 	}
+
+	/**
+	 * @param string $userId
+	 */
+	public function setUserId($userId) {
+		$this->userId = $userId;
+		return $this;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getUserId() {
+		return $this->userId;
+	}
+
+	/**
+	 * @param string $orderId
+	 */
+	public function setOrderId($orderId) {
+		$this->orderId = $orderId;
+		return $this;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getOrderId() {
+		return $this->orderId;
+	}
+	
 
 	/**
 	 * Return result of payment
@@ -297,6 +339,8 @@ abstract class PortAbstract
 
 		$this->transactionId = $this->getTable()->insert([
 			'id' 			=> $uid,
+			'user_id' 			=> $this->getUserId(),
+			'order_id' 			=> $this->getOrderId(),
 			'port' 			=> $this->getPortName(),
 			'price' 		=> $this->amount,
 			'status' 		=> Enum::TRANSACTION_INIT,
