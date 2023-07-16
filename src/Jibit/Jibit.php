@@ -207,8 +207,6 @@ class Jibit extends PortAbstract implements PortInterface
             'Authorization: Bearer ' . $token['accessToken']
         ]);
 
-        var_dump($response);exit;
-
         if (array_key_exists('errors', $response)) {
             $this->failed($response['errors'][0]['code']);
         }
