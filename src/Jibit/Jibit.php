@@ -137,7 +137,7 @@ class Jibit extends PortAbstract implements PortInterface
             'currency' => 'IRR',
         ];
 
-        if($this->validateCardNumber())
+        if(count($this->getValidCardNumbers()))
             $data['payerCardNumbers'] = $this->getValidCardNumbers();
         
         $response = $this->jsonRequest(self::requestUrl, $data, [
