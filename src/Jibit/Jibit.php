@@ -41,11 +41,24 @@ class Jibit extends PortAbstract implements PortInterface
     protected const gateUrl = self::baseUrl . 'purchases/{purchaseId}/payments';
 
     /**
+     * URL for inquiring a purchase.
+	 * @var string
+     */
+    protected const inquiryUrl = self::baseUrl . 'purchases?purchaseId={purchaseId}';
+
+    /**
      * Mapping of api status values.
      */
     const apiStatus = [
         'SUCCESS' => 'SUCCESSFUL',
         'FAIL' => 'FAILED',
+    ];
+
+    /**
+     * Mapping of api inquiry status values.
+     */
+    const apiInquiryStatus = [
+        'READY_TO_VERIFY' => 'READY_TO_VERIFY'
     ];
 
     /**
@@ -87,7 +100,7 @@ class Jibit extends PortAbstract implements PortInterface
         $maskedCardNumber = Request::input('payerMaskedCardNumber');
 
         $this->userPayment($status, $purchaseId, $trackingCode, $maskedCardNumber);
-        $this->verifyPayment($trackingCode, $maskedCardNumber);
+        $this->verifyPayment();
         return $this;
     }
 
@@ -182,20 +195,30 @@ class Jibit extends PortAbstract implements PortInterface
     }
 
     /**
-     * Verify user payment from zarinpal server
+     * Verify user payment from jibit server
      *
-     * @param string $trackingCode
-     * @param string $maskedCardNumber
      * @return bool
      *
      * @throws JibitException
      */
-    protected function verifyPayment($trackingCode, $maskedCardNumber)
+    protected function verifyPayment()
     {
         $token = $this->generateToken(
             $this->config->get('gateway.jibit.api_key'),
             $this->config->get('gateway.jibit.secret_key')
         );
+
+        $inquiryResponse = $this->jsonRequest($this->bindPurchaseId($this->refId, self::inquiryUrl), [], [
+            'Authorization: Bearer ' . $token['accessToken']
+        ]);
+
+        $inquiryResponse = $inquiryResponse['elements'][0];
+
+        if ($inquiryResponse['state'] != self::apiInquiryStatus['READY_TO_VERIFY'])
+            $this->failed('verification_failed');
+
+        if(!$this->validateCardNumber($inquiryResponse['pspMaskedCardNumber']))
+            $this->failed('purchase.forbidden_card_number');
         
         $response = $this->jsonRequest($this->bindPurchaseId($this->refId, self::verifyUrl), [], [
             'Authorization: Bearer ' . $token['accessToken']
@@ -209,8 +232,8 @@ class Jibit extends PortAbstract implements PortInterface
             $this->failed('verification_failed');
         }
 
-        $this->trackingCode = $trackingCode;
-        $this->cardNumber = $maskedCardNumber;
+        $this->trackingCode = $inquiryResponse['pspRrn'];
+        $this->cardNumber = $inquiryResponse['pspMaskedCardNumber'];
         $this->transactionSucceed();
         $this->newLog(Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_SUCCEED_TEXT);
         return true;
