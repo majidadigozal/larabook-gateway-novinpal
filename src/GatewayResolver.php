@@ -12,6 +12,7 @@ use Larabookir\Gateway\Saman\Saman;
 use Larabookir\Gateway\Asanpardakht\Asanpardakht;
 use Larabookir\Gateway\Zarinpal\Zarinpal;
 use Larabookir\Gateway\Jibit\Jibit;
+use Larabookir\Gateway\Vendar\Vendar;
 use Larabookir\Gateway\Payir\Payir;
 use Larabookir\Gateway\Exceptions\RetryException;
 use Larabookir\Gateway\Exceptions\PortNotFoundException;
@@ -24,23 +25,23 @@ class GatewayResolver
 
 	protected $request;
 
-	/**
-	 * @var Config
-	 */
-	public $config;
+    /**
+     * @var Config
+     */
+    public $config;
 
-	/**
-	 * Keep current port driver
-	 *
-	 * @var Mellat|Saman|Sadad|Zarinpal|Payir|Parsian
-	 */
-	protected $port;
+    /**
+     * Keep current port driver
+     *
+     * @var Mellat|Saman|Sadad|Zarinpal|Payir|Parsian
+     */
+    protected $port;
 
-	/**
-	 * Gateway constructor.
-	 * @param null $config
-	 * @param null $port
-	 */
+    /**
+     * Gateway constructor.
+     * @param null $config
+     * @param null $port
+     */
 	public function __construct($config = null, $port = null)
 	{
 		$this->config = app('config');
@@ -50,86 +51,86 @@ class GatewayResolver
 			date_default_timezone_set($this->config->get('gateway.timezone'));
 
 		if (!is_null($port)) $this->make($port);
-	}
+    }
 
-	/**
-	 * Get supported ports
-	 *
-	 * @return array
-	 */
-	public function getSupportedPorts()
-	{
-		return (array) Enum::getIPGs();
-	}
+    /**
+     * Get supported ports
+     *
+     * @return array
+     */
+    public function getSupportedPorts()
+    {
+        return (array) Enum::getIPGs();
+    }
 
-	/**
-	 * Call methods of current driver
-	 *
-	 * @return mixed
-	 */
-	public function __call($name, $arguments)
-	{
+    /**
+     * Call methods of current driver
+     *
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
 
-		// calling by this way ( Gateway::mellat()->.. , Gateway::parsian()->.. )
-		if(in_array(strtoupper($name),$this->getSupportedPorts())){
-			return $this->make($name);
-		}
+        // calling by this way ( Gateway::mellat()->.. , Gateway::parsian()->.. )
+        if(in_array(strtoupper($name),$this->getSupportedPorts())){
+            return $this->make($name);
+        }
 
-		return call_user_func_array([$this->port, $name], $arguments);
-	}
+        return call_user_func_array([$this->port, $name], $arguments);
+    }
 
-	/**
-	 * Gets query builder from you transactions table
-	 * @return mixed
-	 */
-	function getTable()
-	{
-		return DB::table($this->config->get('gateway.table'));
-	}
+    /**
+     * Gets query builder from you transactions table
+     * @return mixed
+     */
+    function getTable()
+    {
+        return DB::table($this->config->get('gateway.table'));
+    }
 
-	/**
-	 * Callback
-	 *
+    /**
+     * Callback
+     *
 	 * @param array $validCardNumbers only works with jibit gateway
-	 * @return $this->port
-	 *
-	 * @throws InvalidRequestException
-	 * @throws NotFoundTransactionException
-	 * @throws PortNotFoundException
-	 * @throws RetryException
-	 */
+     * @return $this->port
+     *
+     * @throws InvalidRequestException
+     * @throws NotFoundTransactionException
+     * @throws PortNotFoundException
+     * @throws RetryException
+     */
 	public function verify($validCardNumbers = [])
 	{
 		if (!$this->request->has('transaction_id') && !$this->request->has('iN') && !$this->request->has('pspRRN'))
-			throw new InvalidRequestException;
+            throw new InvalidRequestException;
 		if ($this->request->has('transaction_id')) {
 			$id = $this->request->get('transaction_id');
 		}else {
 			$id = $this->request->get('iN');
-		}
+        }
 
 		$transaction = $this->getTable()->whereId($id)->first();
 
 		if (!$transaction)
-			throw new NotFoundTransactionException;
+            throw new NotFoundTransactionException;
 
 		if (in_array($transaction->status, [Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_FAILED]))
-			throw new RetryException;
+            throw new RetryException;
 
 		$this->make($transaction->port);
 
 		$this->port->setValidCardNumbers($validCardNumbers);
 
 		return $this->port->verify($transaction);
-	}
+    }
 
 
-	/**
-	 * Create new object from port class
-	 *
-	 * @param int $port
-	 * @throws PortNotFoundException
-	 */
+        /**
+     * Create new object from port class
+     *
+     * @param int $port
+     * @throws PortNotFoundException
+     */
 	function make($port)
     {
         if ($port InstanceOf Mellat) {
@@ -154,6 +155,8 @@ class GatewayResolver
             $name = Enum::PASARGAD;
         } elseif ($port InstanceOf Irankish) {
             $name = Enum::IRANKISH;
+        } elseif ($port instanceof Vendar) {
+            $name = Enum::VENDAR;
         } elseif (in_array(strtoupper($port), $this->getSupportedPorts())) {
             $port = ucfirst(strtolower($port));
             $name = strtoupper($port);
