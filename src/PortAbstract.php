@@ -471,7 +471,7 @@ abstract class PortAbstract
 	 * @return string The response body.
 	 * @throws Exception if the request fails or encounters an error.
 	 */
-	function request($url, $method = 'GET', $data = [], $headers = [], $json = false)
+	protected function request($url, $method = 'GET', $data = [], $headers = [], $json = false)
 	{
 		$ch = curl_init();
 
@@ -533,7 +533,7 @@ abstract class PortAbstract
 	 * @return array The decoded JSON response.
 	 * @throws Exception if the request fails, encounters an error, or if the response is not valid JSON.
 	 */
-	function jsonRequest($url, $data, $headers = [])
+	protected function jsonRequest($url, $data, $headers = [])
 	{
 		$response = $this->request($url, 'POST', $data, $headers, true);
 
@@ -547,4 +547,18 @@ abstract class PortAbstract
 
 		return $responseData;
 	}
+
+
+	/**
+	 * @param string $maskedCardNumber
+	 * @return boolean
+	 */
+	protected function validateCardNumber($maskedCardNumber) {
+        foreach($this->getValidCardNumbers() as $validCardNumber) {
+            if (preg_replace("/(\d{6}).*(\d{4})/", "$1******$2", $validCardNumber) == $maskedCardNumber)
+                return true;
+        }
+
+		return false;
+    }
 }
