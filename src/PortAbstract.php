@@ -82,12 +82,6 @@ abstract class PortAbstract
 	protected $trackingCode;
 
 	/**
-	 * ValidateCardNumber is a boolean flag which is false by default
-	 * it will be activated while calling setValidCardNumbers
-	 */
-	protected $validateCardNumber = false;
-
-	/**
 	 * validCardNumbers is an array that is initially empty, but is later populated with valid card numbers.
 	 *  The purpose of this array is to provide a reference for validating card numbers provided in a payment callback.
 	 */
@@ -250,18 +244,9 @@ abstract class PortAbstract
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function validateCardNumber() {
-		return $this->validateCardNumber;
-	}
-
-
-	/**
 	 * @param array $validCardNumbers
 	 */
 	public function setValidCardNumbers($validCardNumbers) {
-		$this->validateCardNumber = true;
 		$this->validCardNumbers = $validCardNumbers;
 	}
 
