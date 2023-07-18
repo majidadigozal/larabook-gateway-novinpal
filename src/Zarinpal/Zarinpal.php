@@ -181,8 +181,8 @@ class Zarinpal extends PortAbstract implements PortInterface
             $this->failed($response['errors']['code']);
         }
       
-        $this->trackingCode = $response['ref_id'];
-        $this->cardNumber = $response['card_pan'];
+        $this->trackingCode = $response['data']['ref_id'];
+        $this->cardNumber = $response['data']['card_pan'];
         $this->transactionSucceed();
         $this->newLog(Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_SUCCEED_TEXT);
         return true;
