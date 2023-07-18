@@ -2,7 +2,6 @@
 
 namespace Larabookir\Gateway;
 
-use Exception;
 use Larabookir\Gateway\Irankish\Irankish;
 use Larabookir\Gateway\Parsian\Parsian;
 use Larabookir\Gateway\Paypal\Paypal;
@@ -20,6 +19,7 @@ use Larabookir\Gateway\Exceptions\PortNotFoundException;
 use Larabookir\Gateway\Exceptions\InvalidRequestException;
 use Larabookir\Gateway\Exceptions\NotFoundTransactionException;
 use Illuminate\Support\Facades\DB;
+use Larabookir\Gateway\Exceptions\CardValidationNotSupported;
 
 class GatewayResolver
 {
@@ -122,7 +122,7 @@ class GatewayResolver
 
         try {
             $this->port->setValidCardNumbers($validCardNumbers);
-        } catch(Exception $e) {}
+        } catch(CardValidationNotSupported $e) {}
 
 		return $this->port->verify($transaction);
     }

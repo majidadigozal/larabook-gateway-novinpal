@@ -4,6 +4,7 @@ namespace Larabookir\Gateway\Zarinpal;
 use Exception;
 use Illuminate\Support\Facades\Request;
 use Larabookir\Gateway\Enum;
+use Larabookir\Gateway\Exceptions\CardValidationNotSupported;
 use Larabookir\Gateway\PortAbstract;
 use Larabookir\Gateway\PortInterface;
 use Larabookir\Gateway\Zarinpal\ZarinpalException;
@@ -205,10 +206,12 @@ class Zarinpal extends PortAbstract implements PortInterface
      * @throws Exception
 	 */
 	public function setValidCardNumbers($validCardNumbers) {
-		throw new Exception('Zarinpal does not support multiple verified card numbers, try to use setValidCardNumber method instead.');
+		throw new CardValidationNotSupported('Zarinpal does not support multiple verified card numbers, try to use setValidCardNumber method instead.');
 	}
 
     /**
+     * Zarinpal supports single verified card to force it in payment process
+     * This method should be called before payment
 	 * @param string $validCardNumber
      * @return Zarinpal
 	 */
