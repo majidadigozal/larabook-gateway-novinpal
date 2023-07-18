@@ -1,5 +1,5 @@
 <?php
-namespace Larabookir\Gateway\Jibit;
+namespace Larabookir\Gateway\Zarinpal;
 
 use Exception;
 use Illuminate\Support\Facades\Request;
