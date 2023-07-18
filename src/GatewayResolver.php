@@ -120,11 +120,20 @@ class GatewayResolver
 
 		$this->make($transaction->port);
 
-        try {
+        if(!in_array($transaction->port, $this->gatewaysWithlockedBankCard()))
             $this->port->setValidCardNumbers($validCardNumbers);
-        } catch(CardValidationNotSupported $e) {}
 
 		return $this->port->verify($transaction);
+    }
+
+    /**
+     * some payment gateways may only support pre-payment single card validation like zarinpal
+     * @return array
+     */
+    protected function gatewaysWithlockedBankCard() {
+        return [
+            Enum::ZARINPAL
+        ];
     }
 
 
