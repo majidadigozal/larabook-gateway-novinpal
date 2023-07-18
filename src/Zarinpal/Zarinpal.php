@@ -155,7 +155,7 @@ class Zarinpal extends PortAbstract implements PortInterface
     protected function userPayment($status, $authority)
     {
         if($status != 'OK' || !$authority) {
-            $this->failed('failed');
+            $this->failed();
         }
 
         return true;
@@ -193,7 +193,7 @@ class Zarinpal extends PortAbstract implements PortInterface
      * @param int|string $errorCode The error code of the encountered exception
      * @throws ZarinpalException An instance of the ZarinpalException class with the given error code
      */
-    protected function failed($errorCode) {
+    protected function failed($errorCode = 0) {
         $this->transactionFailed();
         $this->newLog($errorCode, ZarinpalException::ERRORS[$errorCode]);
         throw new ZarinpalException($errorCode);
