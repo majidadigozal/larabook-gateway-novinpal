@@ -33,7 +33,7 @@ class Zarinpal extends PortAbstract implements PortInterface
      * URL for submitting payments for a purchase.
 	 * @var string
      */
-    protected const gateUrl = self::baseUrl . 'https://www.zarinpal.com/pg/StartPay/';
+    protected const gateUrl = 'https://www.zarinpal.com/pg/StartPay/';
 
 
     /**
