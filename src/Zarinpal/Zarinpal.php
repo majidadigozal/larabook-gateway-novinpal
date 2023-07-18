@@ -180,10 +180,6 @@ class Zarinpal extends PortAbstract implements PortInterface
             $this->failed($response['errors']['code']);
         }
       
-        if ($response['status'] != self::apiStatus['SUCCESS']) {
-            $this->failed('verification_failed');
-        }
-
         $this->trackingCode = $response['ref_id'];
         $this->cardNumber = $response['card_pan'];
         $this->transactionSucceed();
@@ -199,7 +195,7 @@ class Zarinpal extends PortAbstract implements PortInterface
      */
     protected function failed($errorCode) {
         $this->transactionFailed();
-        $this->newLog(ZarinpalException::ERROR_CODES[$errorCode], ZarinpalException::ERROR_MESSAGES[$errorCode]);
+        $this->newLog($errorCode, ZarinpalException::ERRORS[$errorCode]);
         throw new ZarinpalException($errorCode);
     }
 
