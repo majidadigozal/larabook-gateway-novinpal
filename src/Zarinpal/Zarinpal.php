@@ -133,7 +133,7 @@ class Zarinpal extends PortAbstract implements PortInterface
         
         $response = $this->jsonRequest(self::requestUrl, $data);
 
-        if (array_key_exists('errors', $response)) {
+        if (array_key_exists('errors', $response) && count($response['errors'])) {
             $errorCode = $response['errors']['code'];
             $this->failed($errorCode);
         }
@@ -176,7 +176,7 @@ class Zarinpal extends PortAbstract implements PortInterface
             'authority' => $this->refId
         ]);
 
-        if (array_key_exists('errors', $response)) {
+        if (array_key_exists('errors', $response) && count($response['errors'])) {
             $this->failed($response['errors']['code']);
         }
       
