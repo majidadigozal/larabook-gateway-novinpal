@@ -102,7 +102,7 @@ class GatewayResolver
      */
 	public function verify($validCardNumbers = [])
 	{
-		if (!$this->request->hasAny(['transaction_id', 'authority', 'iN', 'pspRRN']))
+		if (!$this->request->hasAny(['transaction_id', 'authority', 'iN']))
             throw new InvalidRequestException;
 		if ($this->request->has('transaction_id')) {
 			$id = $this->request->get('transaction_id');
