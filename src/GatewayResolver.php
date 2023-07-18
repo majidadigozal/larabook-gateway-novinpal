@@ -2,6 +2,7 @@
 
 namespace Larabookir\Gateway;
 
+use Exception;
 use Larabookir\Gateway\Irankish\Irankish;
 use Larabookir\Gateway\Parsian\Parsian;
 use Larabookir\Gateway\Paypal\Paypal;
@@ -119,7 +120,9 @@ class GatewayResolver
 
 		$this->make($transaction->port);
 
-		$this->port->setValidCardNumbers($validCardNumbers);
+        try {
+            $this->port->setValidCardNumbers($validCardNumbers);
+        } catch(Exception $e) {}
 
 		return $this->port->verify($transaction);
     }
