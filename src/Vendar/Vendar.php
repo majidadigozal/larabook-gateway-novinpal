@@ -2,12 +2,8 @@
 
 namespace Larabookir\Gateway\Vendar;
 
-use App\Models\BankAccount\BankAccount;
-use DateTime;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Str;
+
 use Larabookir\Gateway\Enum;
-use SoapClient;
 use Larabookir\Gateway\PortAbstract;
 use Larabookir\Gateway\PortInterface;
 use Illuminate\Support\Facades\Request;
@@ -58,14 +54,6 @@ class Vendar extends PortAbstract implements PortInterface
     public function set($amount)
     {
         $this->amount = $amount * 10;
-
-        return $this;
-    }
-
-    public function setCustom($user_id, $order_id) {
-
-        $this->user_id = $user_id;
-        $this->order_id = $order_id;
 
         return $this;
     }
@@ -172,10 +160,14 @@ class Vendar extends PortAbstract implements PortInterface
 
         $this->userPayment();
         $this->getInfo();
-        $this->validateCardNumber();
-        if ($this->validateCard) {
-        $this->verifyPayment();
+
+        if(!empty($this->validCardNumbers) && !$this->validateCardNumber($this->cardNumber)) {
+            $this->transactionFailed();
+            $this->newLog(4444, VendarException::$errors['4444']);
+            throw new \Exception(VendarException::$errors['4444']);
         }
+
+        $this->verifyPayment();
 
         return $this;
     }
@@ -300,28 +292,6 @@ class Vendar extends PortAbstract implements PortInterface
         $this->newLog($response->status, $response->errors[0]);
         throw new \Exception($response->errors[0]);
 
-    }
-
-    public function validateCardNumber()
-    {
-        if (auth()->check()) {
-            $user_id = auth()->user()->id;
-            $last_four = substr($this->cardNumber, -4);
-            $userCards = BankAccount::where('user_id',$user_id)
-                ->where('is_active', ACTIVE)
-                ->where('is_verified',ACTIVE)
-                ->whereRaw('SUBSTRING(swift, -4) = '.$last_four)->first();
-            if (!empty($userCards)) {
-                $this->validateCard = true;
-            } else {
-                $this->transactionFailed();
-                $this->validateCard = false;
-                $this->newLog(4444, 'کارت بانکی شما در تریدکس احراز نشده است!');
-                throw new \Exception('کارت بانکی شما در تریدکس احراز نشده است!');
-            }
-        } else {
-            $this->validateCard = false;
-        }
     }
 
     /**

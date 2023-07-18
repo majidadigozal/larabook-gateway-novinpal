@@ -19,6 +19,7 @@ use Larabookir\Gateway\Exceptions\PortNotFoundException;
 use Larabookir\Gateway\Exceptions\InvalidRequestException;
 use Larabookir\Gateway\Exceptions\NotFoundTransactionException;
 use Illuminate\Support\Facades\DB;
+use Larabookir\Gateway\Exceptions\CardValidationNotSupported;
 
 class GatewayResolver
 {
@@ -101,11 +102,13 @@ class GatewayResolver
      */
 	public function verify($validCardNumbers = [])
 	{
-		if (!$this->request->has('transaction_id') && !$this->request->has('iN') && !$this->request->has('pspRRN'))
+		if (!$this->request->hasAny(['transaction_id', 'authority', 'iN']))
             throw new InvalidRequestException;
 		if ($this->request->has('transaction_id')) {
 			$id = $this->request->get('transaction_id');
-		}else {
+		} else if ($this->request->has('authority')) {
+			$id = $this->request->get('authority');
+        } else {
 			$id = $this->request->get('iN');
         }
 
@@ -119,9 +122,20 @@ class GatewayResolver
 
 		$this->make($transaction->port);
 
-		$this->port->setValidCardNumbers($validCardNumbers);
+        if(!in_array($transaction->port, $this->gatewaysWithlockedBankCard()))
+            $this->port->setValidCardNumbers($validCardNumbers);
 
 		return $this->port->verify($transaction);
+    }
+
+    /**
+     * some payment gateways may only support pre-payment single card validation like zarinpal
+     * @return array
+     */
+    protected function gatewaysWithlockedBankCard() {
+        return [
+            Enum::ZARINPAL
+        ];
     }
 
 
