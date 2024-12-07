@@ -172,6 +172,8 @@ class GatewayResolver
             $name = Enum::IRANKISH;
         } elseif ($port instanceof Vendar) {
             $name = Enum::VENDAR;
+        } elseif ($port instanceof Novinpal) {
+            $name = Enum::NOVINPAL;
         } elseif (in_array(strtoupper($port), $this->getSupportedPorts())) {
             $port = ucfirst(strtolower($port));
             $name = strtoupper($port);

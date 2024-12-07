@@ -7,12 +7,12 @@ use Larabookir\Gateway\Enum;
 use Larabookir\Gateway\Exceptions\CardValidationNotSupported;
 use Larabookir\Gateway\PortAbstract;
 use Larabookir\Gateway\PortInterface;
-use Larabookir\Gateway\Zarinpal\ZarinpalException;
+use Larabookir\Gateway\Novinpal\NovinpalException;
 
-class Zarinpal extends PortAbstract implements PortInterface
+class Novinpal extends PortAbstract implements PortInterface
 {
     /**
-     * Base URL for the ZarinPal API.
+     * Base URL for the Novinpal API.
      * @var string
      */
     protected const baseUrl = 'https://api.novinpal.ir/invoice/';
@@ -122,7 +122,7 @@ class Zarinpal extends PortAbstract implements PortInterface
         $data = [
             'api_key' => $this->config->get('gateway.novinpal.api_key'),
             'amount'   => $this->amount,
-            'description' => 'Transaction #' . $this->transactionId,
+            'description' => 'txn #' . $this->transactionId,
             'return_url' => $this->getCallback(),
         ];
 
@@ -206,7 +206,7 @@ class Zarinpal extends PortAbstract implements PortInterface
 	}
 
     /**
-     * Zarinpal supports single verified card to force it in payment process
+     * Novinpal supports single verified card to force it in payment process
      * This method should be called before payment
 	 * @param string $validCardNumber
      * @return Novinpal
