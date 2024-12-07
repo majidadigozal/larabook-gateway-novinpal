@@ -122,6 +122,7 @@ class Novinpal extends PortAbstract implements PortInterface
         $data = [
             'api_key' => $this->config->get('gateway.novinpal.api_key'),
             'amount'   => $this->amount,
+            'order_id' => $this->transactionId,
             'description' => 'txn #' . $this->transactionId,
             'return_url' => $this->getCallback(),
         ];
