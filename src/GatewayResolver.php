@@ -25,7 +25,7 @@ use Larabookir\Gateway\Exceptions\CardValidationNotSupported;
 class GatewayResolver
 {
 
-	protected $request;
+    protected $request;
 
     /**
      * @var Config
@@ -44,15 +44,15 @@ class GatewayResolver
      * @param null $config
      * @param null $port
      */
-	public function __construct($config = null, $port = null)
-	{
-		$this->config = app('config');
-		$this->request = app('request');
+    public function __construct($config = null, $port = null)
+    {
+        $this->config = app('config');
+        $this->request = app('request');
 
-		if ($this->config->has('gateway.timezone'))
-			date_default_timezone_set($this->config->get('gateway.timezone'));
+        if ($this->config->has('gateway.timezone'))
+            date_default_timezone_set($this->config->get('gateway.timezone'));
 
-		if (!is_null($port)) $this->make($port);
+        if (!is_null($port)) $this->make($port);
     }
 
     /**
@@ -93,7 +93,7 @@ class GatewayResolver
     /**
      * Callback
      *
-	 * @param array $validCardNumbers only works with jibit gateway
+     * @param array $validCardNumbers only works with jibit gateway
      * @return $this->port
      *
      * @throws InvalidRequestException
@@ -101,32 +101,32 @@ class GatewayResolver
      * @throws PortNotFoundException
      * @throws RetryException
      */
-	public function verify($validCardNumbers = [])
-	{
-		if (!$this->request->hasAny(['transaction_id', 'authority', 'iN']))
+    public function verify($validCardNumbers = [])
+    {
+        if (!$this->request->hasAny(['transaction_id', 'authority', 'iN']))
             throw new InvalidRequestException;
-		if ($this->request->has('transaction_id')) {
-			$id = $this->request->get('transaction_id');
-		} else if ($this->request->has('authority')) {
-			$id = $this->request->get('authority');
+        if ($this->request->has('transaction_id')) {
+            $id = $this->request->get('transaction_id');
+        } else if ($this->request->has('authority')) {
+            $id = $this->request->get('authority');
         } else {
-			$id = $this->request->get('iN');
+            $id = $this->request->get('iN');
         }
 
-		$transaction = $this->getTable()->whereId($id)->first();
+        $transaction = $this->getTable()->whereId($id)->first();
 
-		if (!$transaction)
+        if (!$transaction)
             throw new NotFoundTransactionException;
 
-		if (in_array($transaction->status, [Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_FAILED]))
+        if (in_array($transaction->status, [Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_FAILED]))
             throw new RetryException;
 
-		$this->make($transaction->port);
+        $this->make($transaction->port);
 
         if(!in_array($transaction->port, $this->gatewaysWithlockedBankCard()))
             $this->port->setValidCardNumbers($validCardNumbers);
 
-		return $this->port->verify($transaction);
+        return $this->port->verify($transaction);
     }
 
     /**
@@ -135,18 +135,19 @@ class GatewayResolver
      */
     protected function gatewaysWithlockedBankCard() {
         return [
-            Enum::ZARINPAL
+            Enum::ZARINPAL,
+            Enum::NOVINPAL,
         ];
     }
 
 
-        /**
+    /**
      * Create new object from port class
      *
      * @param int $port
      * @throws PortNotFoundException
      */
-	function make($port)
+    function make($port)
     {
         if ($port InstanceOf Mellat) {
             $name = Enum::MELLAT;

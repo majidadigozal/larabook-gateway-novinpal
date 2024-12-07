@@ -20,21 +20,21 @@ class Novinpal extends PortAbstract implements PortInterface
 
     /**
      * URL for creating purchase requests.
-	 * @var string
+     * @var string
      */
-    protected const requestUrl = self::baseUrl . 'request.json';
+    protected const requestUrl = self::baseUrl . 'request';
 
     /**
      * URL for verifying purchase requests.
-	 * @var string
+     * @var string
      */
-    protected const verifyUrl = self::baseUrl . 'verify.json';
+    protected const verifyUrl = self::baseUrl . 'verify';
 
     /**
      * URL for submitting payments for a purchase.
-	 * @var string
+     * @var string
      */
-    protected const gateUrl = 'https://api.novinpal.ir/invoice/';
+    protected const gateUrl = 'https://api.novinpal.ir/invoice/start/';
 
 
     /**
@@ -77,8 +77,8 @@ class Novinpal extends PortAbstract implements PortInterface
     {
         parent::verify($transaction);
 
-        $status = Request::input('Status');
-        $authority = Request::input('Authority');
+        $status = Request::input('success');
+        $authority = Request::input('refId');
 
         $this->userPayment($status, $authority);
         $this->verifyPayment();
@@ -104,7 +104,7 @@ class Novinpal extends PortAbstract implements PortInterface
     {
         if (!$this->callbackUrl)
             throw new Exception('You have to set callback url first.');
-            
+
         return $this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]);
     }
 
@@ -127,18 +127,22 @@ class Novinpal extends PortAbstract implements PortInterface
             'return_url' => $this->getCallback(),
         ];
 
+
         if(count($this->getValidCardNumbers()))
             $data['card_number'] = current($this->getValidCardNumbers());
-        
+
+
         $response = $this->jsonRequest(self::requestUrl, $data);
 
-        if (array_key_exists('errors', $response) && count($response['errors'])) {
-            $errorCode = $response['errors']['code'];
+        if (data_get($response, 'status', null) != 1) {
+            $errorCode = $response['message'];
             $this->failed($errorCode);
+            return false;
         }
 
-        $this->refId = $response['data']['ref_id'];
+        $this->refId = $response['refId'];
         $this->transactionSetRefId();
+
         return true;
     }
 
@@ -153,7 +157,7 @@ class Novinpal extends PortAbstract implements PortInterface
      */
     protected function userPayment($status, $ref_id)
     {
-        if($status != 'OK' || !$ref_id) {
+        if($status != 1 || !$ref_id) {
             $this->failed();
         }
 
@@ -168,7 +172,7 @@ class Novinpal extends PortAbstract implements PortInterface
      * @throws NovinpalException
      */
     protected function verifyPayment()
-    {  
+    {
         $response = $this->jsonRequest(self::verifyUrl, [
             'api_key' => $this->config->get('gateway.novinpal.api_key'),
             'ref_id' => $this->refId
@@ -177,9 +181,9 @@ class Novinpal extends PortAbstract implements PortInterface
         if (array_key_exists('errors', $response) && count($response['errors'])) {
             $this->failed($response['errors']['code']);
         }
-      
-        $this->trackingCode = $response['data']['ref_id'];
-        $this->cardNumber = $response['data']['card_number'];
+
+        $this->trackingCode = $response['refId'];
+        $this->cardNumber = $response['cardNumber'];
         $this->transactionSucceed();
         $this->newLog(Enum::TRANSACTION_SUCCEED, Enum::TRANSACTION_SUCCEED_TEXT);
         return true;
@@ -199,21 +203,21 @@ class Novinpal extends PortAbstract implements PortInterface
 
     /**
      * Novinpal does not support multiple verified card numbers
-	 * @param array $validCardNumbers
+     * @param array $validCardNumbers
      * @throws Exception
-	 */
-	public function setValidCardNumbers($validCardNumbers) {
-		throw new CardValidationNotSupported('Novinpal does not support multiple verified card numbers, try to use setValidCardNumber method instead.');
-	}
+     */
+    public function setValidCardNumbers($validCardNumbers) {
+        throw new CardValidationNotSupported('Novinpal does not support multiple verified card numbers, try to use setValidCardNumber method instead.');
+    }
 
     /**
      * Novinpal supports single verified card to force it in payment process
      * This method should be called before payment
-	 * @param string $validCardNumber
+     * @param string $validCardNumber
      * @return Novinpal
-	 */
-	public function setValidCardNumber($validCardNumber) {
-		$this->validCardNumbers = [$validCardNumber];
-		return $this;
-	}
+     */
+    public function setValidCardNumber($validCardNumber) {
+        $this->validCardNumbers = [$validCardNumber];
+        return $this;
+    }
 }
