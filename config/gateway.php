@@ -107,6 +107,15 @@ return [
     ],
 
     //--------------------------------
+    // Novinpal gateway
+    //--------------------------------
+    'novinpal' => [
+        'api_key' => null,
+        'secret_key' => null,
+        'callback_url' => null
+    ],
+
+    //--------------------------------
     // Paypal gateway
     //--------------------------------
     'paypal'   => [

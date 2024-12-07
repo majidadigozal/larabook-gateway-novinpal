@@ -18,6 +18,7 @@ class Enum
     const PAYIR = 'PAYIR';
     const IRANKISH = 'IRANKISH';
     const VENDAR = 'VENDAR';
+    const NOVINPAL = 'NOVINPAL';
   	const MASKAN = self::IRANKISH;
 
   	static function getIPGs(){
