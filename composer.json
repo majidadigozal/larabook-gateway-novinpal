@@ -29,6 +29,7 @@
     "asan-pardakht",
     "pay-ir",
     "jibit",
+    "novinpal",
     "paypal"
   ],
   "license": "MIT",
@@ -48,6 +49,10 @@
     {
       "name": "Mahbod Azizkhani",
       "email": "mzero651@gmail.com"
+    },
+    {
+      "name": "Majid Adigozal",
+      "email": "adigozalpour@gmail.com"
     }
   ],
   "require": {

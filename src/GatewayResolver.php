@@ -13,6 +13,7 @@ use Larabookir\Gateway\Asanpardakht\Asanpardakht;
 use Larabookir\Gateway\Zarinpal\Zarinpal;
 use Larabookir\Gateway\Jibit\Jibit;
 use Larabookir\Gateway\Vendar\Vendar;
+use Larabookir\Gateway\Novinpal\Novinpal;
 use Larabookir\Gateway\Payir\Payir;
 use Larabookir\Gateway\Exceptions\RetryException;
 use Larabookir\Gateway\Exceptions\PortNotFoundException;
@@ -171,6 +172,8 @@ class GatewayResolver
             $name = Enum::IRANKISH;
         } elseif ($port instanceof Vendar) {
             $name = Enum::VENDAR;
+        } elseif ($port instanceof Novinpal) {
+            $name = Enum::NOVINPAL;
         } elseif (in_array(strtoupper($port), $this->getSupportedPorts())) {
             $port = ucfirst(strtolower($port));
             $name = strtoupper($port);
