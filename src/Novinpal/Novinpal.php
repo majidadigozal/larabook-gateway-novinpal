@@ -178,8 +178,8 @@ class Novinpal extends PortAbstract implements PortInterface
             'ref_id' => $this->refId
         ]);
 
-        if (array_key_exists('errors', $response) && count($response['errors'])) {
-            $this->failed($response['errors']['code']);
+        if (data_get($response, 'status') != 1 ) {
+            $this->failed(data_get($response, 'message'));
         }
 
         $this->trackingCode = $response['refId'];
@@ -197,7 +197,7 @@ class Novinpal extends PortAbstract implements PortInterface
      */
     protected function failed($errorCode = 0) {
         $this->transactionFailed();
-        $this->newLog($errorCode, NovinpalException::ERRORS[$errorCode]);
+        $this->newLog($errorCode, data_get(NovinpalException::ERRORS, $errorCode, 'تراکنش ناموفق'));
         throw new NovinpalException($errorCode);
     }
 
