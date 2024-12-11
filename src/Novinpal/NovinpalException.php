@@ -10,7 +10,7 @@ class NovinpalException extends BankException
     public function __construct($errorCode)
     {
         $this->errorCode = $errorCode;
-        parent::__construct(@self::ERRORS[$errorCode], $this->errorCode);
+        parent::__construct(data_get(@self::ERRORS, $errorCode, 'تراکنش ناموفق'), $this->errorCode);
     }
 
     public const ERRORS = array(
